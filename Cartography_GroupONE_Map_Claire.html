@@ -1,0 +1,161 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mapbox Example 6- UK Flowmap 2011</title>
+
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
+
+<!-- ✅ Add Turf.js -->
+<script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+
+<style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZHJhZ29uZmx5NjkiLCJhIjoiY21tMHRodm93MDJiZTJ2cTIyODQ4bW16YyJ9.113KesgL0QmRx4zf91hm9w';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/dragonfly69/cmnz0nom0003501sh6gqt049x',
+    center: [-118.39535, 37.36172],
+    zoom: 6
+});
+
+map.on('load', () => {
+
+    const radius = 20; // km
+
+    // First circle
+    const center1 = [-117.16349, 32.71431];
+    const circle1 = turf.circle(center1, radius, {
+        steps: 64,
+        units: 'kilometers'
+    });
+    circle1.properties = { 
+        name: "San Diego: Pop. 1,386,932" ,
+        description: "This is circle 1 near San Diego"
+    };
+
+    // Second circle
+    const center2 = [-118.24696, 34.0344];
+    const circle2 = turf.circle(center2, radius, {
+        steps: 64,
+        units: 'kilometers'
+    });
+  circle2.properties = { 
+    name: "Los Angeles Metro: Pop. 12,927,614",
+    description: "This is circle 2 near LA"
+ };  
+
+    // Third circle
+const center3 = [-120.43223, 35.89952];
+const circle3 = turf.circle(center3, radius, {
+    steps: 64,
+    units: 'kilometers'
+});
+  circle3.properties = {
+    name: "Parkfield: Earthquake Capital of the World",
+    description: "This is circle 2 near Parkfield"
+};
+
+// Fourth circle
+const center4 = [-122.21070, 37.77323];
+const circle4 = turf.circle(center4, radius, {
+    steps: 64,
+    units: 'kilometers'
+});
+circle4.properties = { 
+    name: "San Francisco Metro: Pop. 4,740,552",
+    description: "This is circle 4 near San Francisco"
+};
+
+// Fifth circle
+const center5 = [-123.21070, 39.14930];
+const circle5 = turf.circle(center5, radius, {
+    steps: 64,
+    units: 'kilometers'
+});
+circle5.properties = { 
+    name: "Ukiah: Pop. 16,607",
+    description: "This is circle 5 near Ukiah"
+};
+
+// Sixth circle
+const center6 = [-124.16068, 40.79561];
+const circle6 = turf.circle(center6, radius, {
+    steps: 64,
+    units: 'kilometers'
+});
+circle6.properties = { 
+    name: "Eureka Metro: Pop. 48,119",
+    description: "This is circle 6 near Eureka"
+};
+
+    // Combine both
+    const combined = {
+        type: 'FeatureCollection',
+        features: [circle1, circle2, circle3, circle4, circle5, circle6]
+    };
+
+    map.addSource('radius-circles', {
+        type: 'geojson',
+        data: combined
+    });
+
+    map.addLayer({
+        id: 'radius-fill',
+        type: 'fill',
+        source: 'radius-circles',
+        paint: {
+            'fill-color': '#9d62f5',
+            'fill-opacity': 0.2,
+            'fill-outline-color': 'rgba(0,0,0,0)'
+        }
+    });
+
+    map.addLayer({
+        id: 'radius-outline',
+        type: 'line',
+        source: 'radius-circles',
+        paint: {
+            'line-color': '#4405a3',
+            'line-width': 2
+        }
+    });
+
+map.on('click', 'radius-fill', (e) => {
+    if (!e.features || !e.features.length) return; 
+      
+    const feature = e.features[0];
+
+    new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(`
+            <strong>${feature.properties.name}</strong>
+            `)
+            .addTo(map);
+});
+
+// Change cursor on hover
+map.on('mouseenter', 'radius-fill', () => {
+    map.getCanvas().style.cursor = 'pointer';
+});
+
+map.on('mouseleave', 'radius-fill', () => {
+    map.getCanvas().style.cursor = '';
+}); 
+
+});   
+
+</script>
+
+</body>
+</html>
